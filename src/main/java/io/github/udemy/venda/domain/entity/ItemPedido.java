@@ -1,10 +1,20 @@
 package io.github.udemy.venda.domain.entity;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "ItemPedido")
 public class ItemPedido {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "idItemPedido")
     private Integer idItemPedido;
+    @Column(name = "idPedido")
     private Integer idPedido;
+    @Column(name = "idProduto")
     private Integer idProduto;
+    @Column(name = "quantidade")
     private Integer quantidade;
 
     public Integer getIdItemPedido() {

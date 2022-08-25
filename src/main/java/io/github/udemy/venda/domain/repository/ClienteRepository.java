@@ -2,64 +2,69 @@ package io.github.udemy.venda.domain.repository;
 
 import io.github.udemy.venda.domain.entity.Cliente;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
 public class ClienteRepository {
 
-    private static String INSERT = "INSERT INTO CLIENTE (NOMECLIENTE) VALUES (?);";
-    private static String SELECT_ALL = "SELECT * FROM CLIENTE";
-    private static String DELETE_ONE = "DELETE FROM CLIENTE WHERE IDCLIENTE = ?;";
-    private static String UPDATE_ONE = "UPDATE CLIENTE SET NOMECLIENTE = ? WHERE IDCLIENTE = ?;";
+   @Autowired
+    private EntityManager entityManager;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
+    @Transactional
     public Cliente salvar(Cliente cliente){
-        jdbcTemplate.update(INSERT, new Object[]{cliente.getNomeCliente()});
+        entityManager.persist(cliente);
+        //jdbcTemplate.update(INSERT, new Object[]{cliente.getNomeCliente()});
         return cliente;
     }
 
-    public List<Cliente> listarClientes(){
-        return jdbcTemplate.query(SELECT_ALL, obterClienteRowMapper());
-    }
-
+    @Transactional
     public void excluirCliente(Cliente cliente){
-        excluirCliente(cliente.getIdCLiente());
+        if(!entityManager.contains(cliente)) {
+            cliente = atualizarCliente(cliente);
+        }
+        entityManager.remove(cliente);
     }
 
+    @Transactional
     public void excluirCliente(Integer idCliente){
-        jdbcTemplate.update(DELETE_ONE, new Object[]{idCliente});
+        Cliente cliente = entityManager.find(Cliente.class, idCliente);
+        excluirCliente(cliente);
+//        jdbcTemplate.update(DELETE_ONE, new Object[]{idCliente});
     }
 
-    public void atualizarCliente(Cliente cliente){
-        jdbcTemplate.update(UPDATE_ONE, new Object[]{cliente.getNomeCliente(), cliente.getIdCLiente()});
+    @Transactional
+    public Cliente atualizarCliente(Cliente cliente){
+        return entityManager.merge(cliente);
+//        jdbcTemplate.update(UPDATE_ONE, new Object[]{cliente.getNomeCliente(), cliente.getIdCLiente()});
     }
 
+    @Transactional(readOnly = true)
+    public List<Cliente> listarClientes(){
+        return entityManager.createQuery("from Cliente",Cliente.class).getResultList();
+    }
+
+    @Transactional(readOnly = true)
     public List<Cliente> buscarPorNomeCliente(Cliente cliente){
-        return jdbcTemplate.query(SELECT_ALL.concat(" WHERE NOMECLIENTE LIKE ?"),
-                new Object[]{"%" + cliente.getNomeCliente() + "%"},
-                obterClienteRowMapper());
+        String jpql = " SELECT c FROM Cliente c WHERE c.nomeCliente LIKE :nome ";
+        TypedQuery<Cliente> query = entityManager.createQuery(jpql, Cliente.class);
+        query.setParameter("nome", "%" + cliente.getNomeCliente() + "%");
+
+        return query.getResultList();
     }
 
+    @Transactional(readOnly = true)
     public List<Cliente> buscarPorIdCliente(Cliente cliente){
-        return jdbcTemplate.query(SELECT_ALL.concat(" WHERE IDCLIENTE = ?"),
-                new Object[]{cliente.getIdCLiente()},
-                obterClienteRowMapper());
+        String jpql = " SELECT c FROM Cliente c WHERE c.id = :id ";
+        TypedQuery<Cliente> query = entityManager.createQuery(jpql, Cliente.class);
+        query.setParameter("id", cliente.getIdCLiente());
+
+        return query.getResultList();
     }
 
-    private static RowMapper<Cliente> obterClienteRowMapper() {
-        return new RowMapper<Cliente>() {
-            @Override
-            public Cliente mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Cliente(rs.getInt("idCliente"), rs.getString("nomeCliente"));
-            }
-        };
-    }
+
 }
