@@ -17,43 +17,43 @@ public class VendasApplication {
     public CommandLineRunner executar(@Autowired ClienteRepository clientes){
         return args -> {
             System.out.println("Salvando Clientes");
-            clientes.salvar(new Cliente("Luke"));
-            clientes.salvar(new Cliente("Thor"));
-            clientes.salvar(new Cliente("Igão"));
+            clientes.save(new Cliente("Luke"));
+            clientes.save(new Cliente("Thor"));
+            clientes.save(new Cliente("Igão"));
 
-            List<Cliente> listaCliente = clientes.listarClientes();
+            List<Cliente> listaCliente = clientes.findAll();
             listaCliente.forEach(System.out::println);
 
             listaCliente.forEach(c -> {
                 c.setNomeCliente(c.getNomeCliente() + " atualizado");
-                clientes.atualizarCliente(c);
+                clientes.save(c);
             });
 
             System.out.println("Atualizando Cliente");
-            listaCliente = clientes.listarClientes();
+            listaCliente = clientes.findAll();
             listaCliente.forEach(System.out::println);
 
             System.out.println("Buscando Cliente");
-            clientes.buscarPorNomeCliente(new Cliente("Luk")).forEach(System.out::println);
+            clientes.findByNomeClienteLike("Luk").forEach(System.out::println);
 
-//            System.out.println("Deletando Cliente");
-//            clientes.listarClientes().forEach(cliente -> {
+            System.out.println("Deletando Cliente");
+            clientes.findAll().forEach(cliente -> {
+                clientes.delete(cliente);
+            });
+
+//            System.out.println("Deletando Cliente por nome");
+//            clientes.findByNomeClienteLike(new Cliente("Luk")).forEach(cliente -> {
+//                System.out.println("Excluíndo Cliente: " + cliente.getNomeCliente());
 //                clientes.excluirCliente(cliente);
 //            });
 
-            System.out.println("Deletando Cliente por nome");
-            clientes.buscarPorNomeCliente(new Cliente("Luk")).forEach(cliente -> {
-                System.out.println("Excluíndo Cliente: " + cliente.getNomeCliente());
-                clientes.excluirCliente(cliente);
-            });
+//            System.out.println("Deletando Cliente por id");
+//            clientes.buscarPorIdCliente(new Cliente(1)).forEach(cliente -> {
+//                System.out.println("Excluíndo Cliente: " + cliente.getNomeCliente());
+//                clientes.excluirCliente(cliente);
+//            });
 
-            System.out.println("Deletando Cliente por id");
-            clientes.buscarPorIdCliente(new Cliente(1)).forEach(cliente -> {
-                System.out.println("Excluíndo Cliente: " + cliente.getNomeCliente());
-                clientes.excluirCliente(cliente);
-            });
-
-            listaCliente = clientes.listarClientes();
+            listaCliente = clientes.findAll();
             if(listaCliente.isEmpty()){
                 System.out.println("Não existem clientes cadastrados!");
             } else {
