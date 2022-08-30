@@ -8,12 +8,18 @@ public class ItemPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+
     @Column(name = "idItemPedido")
     private Integer idItemPedido;
-    @Column(name = "idPedido")
-    private Integer idPedido;
-    @Column(name = "idProduto")
-    private Integer idProduto;
+
+    @ManyToOne
+    @JoinColumn(name = "id_pedido")
+    private Pedido pedido;
+
+    @ManyToOne
+    @JoinColumn(name = "id_produto")
+    private Produto produto;
+
     @Column(name = "quantidade")
     private Integer quantidade;
 
@@ -25,20 +31,20 @@ public class ItemPedido {
         this.idItemPedido = idItemPedido;
     }
 
-    public Integer getIdPedido() {
-        return idPedido;
+    public Pedido getPedido() {
+        return pedido;
     }
 
-    public void setIdPedido(Integer idPedido) {
-        this.idPedido = idPedido;
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
 
-    public Integer getIdProduto() {
-        return idProduto;
+    public Produto getProduto() {
+        return produto;
     }
 
-    public void setIdProduto(Integer idProduto) {
-        this.idProduto = idProduto;
+    public void setIdProduto(Produto produto) {
+        this.produto = produto;
     }
 
     public Integer getQuantidade() {

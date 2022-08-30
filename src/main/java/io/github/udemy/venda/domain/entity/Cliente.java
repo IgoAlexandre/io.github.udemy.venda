@@ -1,37 +1,49 @@
 package io.github.udemy.venda.domain.entity;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "Cliente")
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Integer idCLiente;
+    @Column(name = "id_Cliente")
+    private Integer idCliente;
     @Column(name = "Nome_Cliente", length = 100)
     private String nomeCliente;
+
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private Set<Pedido> pedidos;
+
+    public Set<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(Set<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
 
     public Cliente() {
     }
 
-    public Cliente(Integer idCLiente) {
-        this.idCLiente = idCLiente;
+    public Cliente(Integer idCliente) {
+        this.idCliente = idCliente;
     }
 
     public Cliente(String nomeCliente) {
         this.nomeCliente = nomeCliente;
     }
-    public Cliente(Integer idCLiente, String nomeCliente) {
-        this.idCLiente = idCLiente;
+    public Cliente(Integer idCliente, String nomeCliente) {
+        this.idCliente = idCliente;
         this.nomeCliente = nomeCliente;
     }
-    public Integer getIdCLiente() {
-        return idCLiente;
+    public Integer getIdCliente() {
+        return idCliente;
     }
 
-    public void setIdCLiente(Integer idCLiente) {
-        this.idCLiente = idCLiente;
+    public void setIdCliente(Integer idCliente) {
+        this.idCliente = idCliente;
     }
 
     public String getNomeCliente() {
@@ -45,7 +57,7 @@ public class Cliente {
     @Override
     public String toString() {
         return "Cliente{" +
-                "idCLiente=" + idCLiente +
+                "idCLiente=" + idCliente +
                 ", nomeCliente='" + nomeCliente + '\'' +
                 '}';
     }
