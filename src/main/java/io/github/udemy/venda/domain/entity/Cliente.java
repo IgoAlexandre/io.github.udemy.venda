@@ -1,5 +1,7 @@
 package io.github.udemy.venda.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -13,6 +15,9 @@ public class Cliente {
     @Column(name = "Nome_Cliente", length = 100)
     private String nomeCliente;
 
+    @Column(name = "cpf_Cnpj", length = 14)
+    private String cpfCnpj;
+    @JsonIgnore
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private Set<Pedido> pedidos;
 
@@ -54,11 +59,20 @@ public class Cliente {
         this.nomeCliente = nomeCliente;
     }
 
+    public String getCpfCnpj() {
+        return cpfCnpj;
+    }
+
+    public void setCpfCnpj(String cpfCnpj) {
+        this.cpfCnpj = cpfCnpj;
+    }
+
     @Override
     public String toString() {
         return "Cliente{" +
-                "idCLiente=" + idCliente +
+                "idCliente=" + idCliente +
                 ", nomeCliente='" + nomeCliente + '\'' +
+                ", cpfCnpj='" + cpfCnpj + '\'' +
                 '}';
     }
 }
