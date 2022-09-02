@@ -77,6 +77,14 @@ public class Pedido {
         this.valorTotal = valorTotal;
     }
 
+    public List<ItemPedido> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemPedido> itens) {
+        this.itens = itens;
+    }
+
     @Override
     public String toString() {
         return "Pedido{" +

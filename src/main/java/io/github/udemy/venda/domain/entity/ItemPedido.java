@@ -43,7 +43,7 @@ public class ItemPedido {
         return produto;
     }
 
-    public void setIdProduto(Produto produto) {
+    public void setProduto(Produto produto) {
         this.produto = produto;
     }
 
