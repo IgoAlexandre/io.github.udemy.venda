@@ -1,16 +1,22 @@
 package io.github.udemy.venda.rest.controller;
 
+import io.github.udemy.venda.domain.entity.ItemPedido;
 import io.github.udemy.venda.domain.entity.Pedido;
-import io.github.udemy.venda.domain.repository.PedidoRepository;
+import io.github.udemy.venda.domain.enums.StatusPedido;
+import io.github.udemy.venda.rest.dto.AtualizacaoStatusPedidoDTO;
+import io.github.udemy.venda.rest.dto.InformacaoItemPedidoDTO;
+import io.github.udemy.venda.rest.dto.InformacoesPedidoDTO;
 import io.github.udemy.venda.rest.dto.PedidoDTO;
 import io.github.udemy.venda.service.PedidoService;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/pedidos")
@@ -27,6 +33,49 @@ public class PedidoController {
     public Integer salvarPedido(@RequestBody PedidoDTO pedidoDTO){
         Pedido pedido = pedidoService.salvarPedido(pedidoDTO);
         return pedido.getIdPedido();
+    }
+
+    @GetMapping("{idPedido}")
+    public InformacoesPedidoDTO obterPedidoCompleto(@PathVariable Integer idPedido){
+        return pedidoService.obterPedidoCompleto(idPedido)
+                .map(p -> converter(p))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado!"));
+    }
+
+    private InformacoesPedidoDTO converter(Pedido pedido){
+        return InformacoesPedidoDTO.builder()
+                .codigo(pedido.getIdPedido())
+                .dataPedido(pedido.getDataPedido().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                .cpf(pedido.getCliente().getCpfCnpj())
+                .valorTotal(pedido.getValorTotal())
+                .nomeCliente(pedido.getCliente().getNomeCliente())
+                .status(pedido.getStatusPedido().name())
+                .itens(converter(pedido.getItens())
+                ).build();
+    }
+
+    private List<InformacaoItemPedidoDTO> converter(List<ItemPedido> itens){
+        if(CollectionUtils.isEmpty(itens)){
+            return Collections.emptyList();
+        }
+
+        return itens.stream().map(item ->
+            InformacaoItemPedidoDTO.builder()
+                    .descricao(item.getProduto().getDescricao())
+                    .precoUnitario(item.getProduto().getValorProduto())
+                    .quantidade(item.getQuantidade())
+                    .build()
+        ).collect(Collectors.toList());
+    }
+
+
+    @PatchMapping(value = "{idPedido}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void alterarPedido(@PathVariable Integer idPedido,
+                              @RequestBody AtualizacaoStatusPedidoDTO atualizacaoStatusPedidoDTO){
+
+        String novoStatus = atualizacaoStatusPedidoDTO.getNovoStatus();
+        pedidoService.atualizarStatus(idPedido, StatusPedido.valueOf(novoStatus));
     }
 
     /*private PedidoRepository pedidoRepository;

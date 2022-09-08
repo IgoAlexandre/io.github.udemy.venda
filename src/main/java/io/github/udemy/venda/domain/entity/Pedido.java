@@ -1,10 +1,18 @@
 package io.github.udemy.venda.domain.entity;
 
+import io.github.udemy.venda.domain.enums.StatusPedido;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Entity
 @Table(name = "Pedido")
 public class Pedido {
@@ -27,71 +35,14 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY)
     private List<ItemPedido> itens;
 
-    public Pedido() {
-    }
-
-    public Pedido(Integer idPedido, Cliente cliente, LocalDate dataPedido, BigDecimal valorTotal, List<ItemPedido> itens) {
-        this.idPedido = idPedido;
-        this.cliente = cliente;
-        this.dataPedido = dataPedido;
-        this.valorTotal = valorTotal;
-        this.itens = itens;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Status")
+    private StatusPedido statusPedido;
 
     public Pedido(Integer idPedido, Cliente cliente, LocalDate dataPedido, BigDecimal valorTotal) {
         this.idPedido = idPedido;
         this.cliente = cliente;
         this.dataPedido = dataPedido;
         this.valorTotal = valorTotal;
-    }
-
-    public Integer getIdPedido() {
-        return idPedido;
-    }
-
-    public void setIdPedido(Integer idPedido) {
-        this.idPedido = idPedido;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public LocalDate getDataPedido() {
-        return dataPedido;
-    }
-
-    public void setDataPedido(LocalDate dataPedido) {
-        this.dataPedido = dataPedido;
-    }
-
-    public BigDecimal getValorTotal() {
-        return valorTotal;
-    }
-
-    public void setValorTotal(BigDecimal valorTotal) {
-        this.valorTotal = valorTotal;
-    }
-
-    public List<ItemPedido> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<ItemPedido> itens) {
-        this.itens = itens;
-    }
-
-    @Override
-    public String toString() {
-        return "Pedido{" +
-                "idPedido=" + idPedido +
-                ", cliente=" + cliente +
-                ", dataPedido=" + dataPedido +
-                ", valorTotal=" + valorTotal +
-                '}';
     }
 }

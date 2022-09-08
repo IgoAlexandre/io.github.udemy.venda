@@ -4,10 +4,12 @@ import io.github.udemy.venda.domain.entity.Cliente;
 import io.github.udemy.venda.domain.entity.ItemPedido;
 import io.github.udemy.venda.domain.entity.Pedido;
 import io.github.udemy.venda.domain.entity.Produto;
+import io.github.udemy.venda.domain.enums.StatusPedido;
 import io.github.udemy.venda.domain.repository.ClienteRepository;
 import io.github.udemy.venda.domain.repository.ItemPedidoRepository;
 import io.github.udemy.venda.domain.repository.PedidoRepository;
 import io.github.udemy.venda.domain.repository.ProdutoRepository;
+import io.github.udemy.venda.exception.PedidoNaoEncontradoException;
 import io.github.udemy.venda.exception.RegraNegocioException;
 import io.github.udemy.venda.rest.dto.ItemPedidoDTO;
 import io.github.udemy.venda.rest.dto.PedidoDTO;
@@ -49,6 +51,7 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setCliente(cliente);
         pedido.setValorTotal(pedidoDTO.getValorTotal());
         pedido.setDataPedido(LocalDate.now());
+        pedido.setStatusPedido(StatusPedido.REALIZADO);
         List<ItemPedido> itensPedidos = converterItens(pedido, pedidoDTO.getItens());
 
         pedidoRepository.save(pedido);
@@ -57,6 +60,20 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setItens(itensPedidos);
 
         return pedido;
+    }
+
+    @Override
+    public Optional<Pedido> obterPedidoCompleto(Integer idPedido) {
+        return pedidoRepository.findByIdPedidoFetchItens(idPedido) ;
+    }
+
+    @Override
+    @Transactional
+    public void atualizarStatus(Integer idPedido, StatusPedido statusPedido) {
+        pedidoRepository.findByIdPedido(idPedido).map(pedido -> {
+            pedido.setStatusPedido(statusPedido);
+            return pedidoRepository.save(pedido);
+        }).orElseThrow(() -> new PedidoNaoEncontradoException("Pedido não encontrado!"));
     }
 
     private List<ItemPedido> converterItens(Pedido pedido, List<ItemPedidoDTO> itens){
@@ -80,4 +97,6 @@ public class PedidoServiceImpl implements PedidoService {
                 return itemPedido;
         }).collect(Collectors.toList());
     }
+
+
 }
