@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @NoArgsConstructor
@@ -17,12 +19,14 @@ public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_Produto")
-    private Integer idProduto;
+        private Integer idProduto;
 
     @Column(name = "descricao")
+    @NotEmpty(message = "{campo.descricao.obrigatorio}")
     private String descricao;
 
     @Column(name = "valor_Produto")
+    @NotNull(message = "{campo.preco.obrigatorio}")
     private BigDecimal valorProduto;
 
 }
