@@ -2,6 +2,7 @@ package io.github.udemy.venda.rest.controller;
 
 import io.github.udemy.venda.domain.entity.Cliente;
 import io.github.udemy.venda.domain.repository.ClienteRepository;
+import io.swagger.annotations.*;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/clientes")
+@Api("Api Clientes")
 public class ClienteController {
 
     private ClienteRepository clienteRepository;
@@ -32,7 +34,12 @@ public class ClienteController {
     }
 
     @GetMapping("{idCliente}")
-    public Cliente getClienteByIdCliente(@PathVariable Integer idCliente){
+    @ApiOperation("Obter detalhes de um cliente")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Cliente Encontrado"),
+            @ApiResponse(code = 404, message = "Cliente não Encontrado para o Id informado")
+    })
+    public Cliente getClienteByIdCliente(@PathVariable @ApiParam("Id do Cliente") Integer idCliente){
         return clienteRepository
                 .findById(idCliente)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado")
@@ -41,6 +48,11 @@ public class ClienteController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Salvar cliente")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Cliente salvo com sucesso"),
+            @ApiResponse(code = 400, message = "Erro de validação")
+    })
     public Cliente salvarCliente(@RequestBody @Valid Cliente cliente){
         return clienteRepository.save(cliente);
     }
