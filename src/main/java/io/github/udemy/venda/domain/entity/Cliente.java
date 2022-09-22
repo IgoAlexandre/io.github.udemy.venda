@@ -15,14 +15,14 @@ import java.util.Set;
 @Table(name = "Cliente")
 public class Cliente {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_Cliente")
     private Integer idCliente;
     @Column(name = "Nome_Cliente", length = 100)
     @NotEmpty(message = "{campo.nome.obrigatorio}")
     private String nomeCliente;
 
-    @Column(name = "cpf_Cnpj", length = 14)
+    @Column(name = "cpf", length = 14)
     @NotEmpty(message = "{campo.cpf.obrigatorio}}")
     @CPF(message = "{campo.cpf.invalido}")
     private String cpfCnpj;

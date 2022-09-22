@@ -14,9 +14,9 @@ import javax.persistence.*;
 public class ItemPedido {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    @Column(name = "idItemPedido")
+    @Column(name = "id_Item_Pedido")
     private Integer idItemPedido;
 
     @ManyToOne
