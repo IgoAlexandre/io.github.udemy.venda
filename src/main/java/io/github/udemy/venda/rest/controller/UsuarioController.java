@@ -24,6 +24,7 @@ public class UsuarioController {
     private final UsuarioServiceImpl usuarioService;
     private final PasswordEncoder passwordEncoder;
 
+
     private final JwtService jwtService;
 
     @PostMapping
